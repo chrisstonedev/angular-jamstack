@@ -1,11 +1,24 @@
 {
   "name": "reading.engineering",
-  "version": "1.0.0",
-  "description": "Recommended reading for software development professionals and enthusiasts.",
-  "main": "index.js",
+  "version": "0.1.0",
+  "private": true,
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "dev": "next dev --turbopack",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint"
   },
-  "author": "Chris Stone",
-  "license": "ISC"
+  "dependencies": {
+    "next": "^15.0.2",
+    "react": "19.0.0-rc-02c0e824-20241028",
+    "react-dom": "19.0.0-rc-02c0e824-20241028"
+  },
+  "devDependencies": {
+    "@types/node": "^22",
+    "@types/react": "^18",
+    "@types/react-dom": "^18",
+    "eslint": "^9",
+    "eslint-config-next": "15.0.2",
+    "typescript": "^5"
+  }
 }
