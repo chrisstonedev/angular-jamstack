@@ -1,7 +1,48 @@
+"use client";
+
 import Image from "next/image";
 import styles from "./page.module.css";
+import { useQuery } from "@tanstack/react-query";
+import { sanity } from "@/app/sanity";
+
+interface Book {
+  _id: string;
+  title: string;
+  slug: { current: string };
+  subtitle: string;
+  mains: { name: string }[];
+  withs: { name: string }[];
+  coverImageUrl: string;
+  recommendations: number;
+  allRecommenders: { userId: string }[];
+  wished: number;
+  allWishers: { userId: string }[];
+}
+
+function queryFn(): Promise<Book[]> {
+  return sanity.fetch(`
+  *[_type == "book"]{
+        _id,
+        title,
+        subtitle,
+        slug,
+        "mains": mainAuthors[]->{name},
+        "withs": withAuthors[]->{name},
+        "coverImageUrl": frontCover.asset->url,
+        "recommendations": count(*[_type == "recommendation" && book._ref == ^._id]),
+        "allRecommenders": *[_type == "recommendation" && book._ref == ^._id]{userId},
+        "wished": count(*[_type == "wishList" && book._ref == ^._id]),
+        "allWishers": *[_type == "wishList" && book._ref == ^._id]{userId}
+    }|order(title asc)|order(wished desc)|order(recommendations desc)
+`);
+}
 
 export default function Home() {
+  const { data = [] } = useQuery({
+    queryKey: ["bookList"],
+    queryFn: queryFn,
+  });
+
   return (
     <div className={styles.page}>
       <main className={styles.main}>
@@ -14,10 +55,9 @@ export default function Home() {
           priority
         />
         <ol>
-          <li>
-            Get started by editing <code>app/page.tsx</code>.
-          </li>
-          <li>Save and see your changes instantly.</li>
+          {data.map((b) => (
+            <li key={b.title}>{b.title}</li>
+          ))}
         </ol>
 
         <div className={styles.ctas}>
